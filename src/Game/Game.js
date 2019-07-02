@@ -7,7 +7,7 @@ class Game extends React.Component {
     height: 10,
     snake: [[1, 1], [1, 2], [1, 3]],
     headAngle: 3,
-    apples: [[5, 2], [8, 1]],
+    apples: [[2, 3], [8, 1]],
     field: Array(10).fill(Array(10).fill(1))
   };
 
@@ -21,10 +21,29 @@ class Game extends React.Component {
     return cord;
   };
 
+  ifApple = (x, y) => {
+    const { apples } = this.state;
+
+    for (let a = 0; a < apples.length; a++) {
+      if (x == apples[a][0] && y == apples[a][1]) {
+        let arr = apples.slice(0,0);
+        console.log('ar', arr)
+        this.setState({
+          apples: arr
+        })
+        return true
+      }
+    }
+    return false
+  };
+
   goSnake(x, y) {
     let { snake } = this.state;
     x = this.maxMap(x);
     y = this.maxMap(y);
+    if (this.ifApple(x, y)) {
+      console.info("apple");
+    }
     snake.push([x, y]);
     snake.shift();
     return snake;
@@ -135,27 +154,28 @@ class Game extends React.Component {
   }
 
   render() {
-    let { snake, field } = this.state;
+    let { snake, field, apples } = this.state;
     return (
       <div className="stock">
-        {this.state.field.map((column, x) => {
+        {field.map((column, y) => {
           return (
-            <div className="row" key={x}>
-              {column.map((el, y) => {
+            <div className="row" key={y}>
+              {column.map((el, x) => {
                 for (let i = 0; i < snake.length; i++) {
-                  if (x === snake[i][1] && y === snake[i][0]) {
-                    return <span key={y} className="box active" />;
+                  if (x === snake[i][0] && y === snake[i][1]) {
+                    return <span key={x} className="box active" />;
                   }
                 }
-                return <span className="box" key={y} />;
+                for (let a = 0; a < apples.length; a++) {
+                  if (x == apples[a][0] && y == apples[a][1]) {
+                    return <span key={x} className="box apple" />;
+                  }
+                }
+                return <span className="box" key={x} />;
               })}
             </div>
           );
         })}
-        <button onClick={this.onRight}>Right</button>
-        <button onClick={this.onLeft}>Left</button>
-        <button onClick={this.onTop}>Top</button>
-        <button onClick={this.onBottom}>Bottom</button>
       </div>
     );
   }

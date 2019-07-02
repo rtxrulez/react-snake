@@ -2,9 +2,12 @@
   font-size: 0;
 }
 
-
 .active {
-    background: green;
+  background: green;
+}
+
+.apple {
+  background: red;
 }
 
 .box {
