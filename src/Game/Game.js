@@ -11,6 +11,25 @@ class Game extends React.Component {
     field: Array(10).fill(Array(10).fill(1))
   };
 
+  maxMap = cord => {
+    const map = this.state.width;
+    if (cord >= map) {
+      return 0;
+    } else if (cord < 0) {
+      return map;
+    }
+    return cord;
+  };
+
+  goSnake(x, y) {
+    let { snake } = this.state;
+    x = this.maxMap(x);
+    y = this.maxMap(y);
+    snake.push([x, y]);
+    snake.shift();
+    return snake;
+  }
+
   appendSnake = (axis = "x") => {
     let { snake } = this.state;
     let { x, y } = 0;
@@ -26,17 +45,15 @@ class Game extends React.Component {
       y = headY + 1;
     }
 
-    snake.push([x, y]);
-    snake.shift();
-    return snake;
+    return this.goSnake(x, y);
   };
 
   prependSnake = (axis = "x") => {
     let { snake } = this.state;
     let { x, y } = 0;
 
-    let headX = snake[0][0];
-    let headY = snake[0][1];
+    let headX = snake[snake.length - 1][0];
+    let headY = snake[snake.length - 1][1];
 
     if (axis === "x") {
       x = headX - 1;
@@ -46,15 +63,11 @@ class Game extends React.Component {
       y = headY - 1;
     }
 
-    snake.unshift([x, y]);
-    snake.pop();
-    return snake;
+    return this.goSnake(x, y);
   };
 
   walkSnake(to = 3) {
     const { snake } = this.state;
-    let len = snake.length - 1;
-    // console.log(snake[len])
     let newCord = [];
 
     if (to === 3) {
@@ -99,8 +112,28 @@ class Game extends React.Component {
     this.walkSnake(this.state.headAngle);
     setInterval(() => {
       this.walkSnake(this.state.headAngle);
-    }, 1000);
+    }, 500);
   }
+
+  componentWillMount() {
+    document.addEventListener("keydown", e => {
+      const { keyCode } = e;
+      if (keyCode === 38) {
+        this.onTop();
+      } else if (keyCode === 40) {
+        this.onBottom();
+      } else if (keyCode === 39) {
+        this.onRight();
+      } else if (keyCode === 37) {
+        this.onLeft();
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keydown", e => {});
+  }
+
   render() {
     let { snake, field } = this.state;
     return (
