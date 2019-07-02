@@ -43,9 +43,10 @@ class Game extends React.Component {
     y = this.maxMap(y);
     if (this.ifApple(x, y)) {
       console.info("apple");
+    } else {
+      snake.shift();
     }
     snake.push([x, y]);
-    snake.shift();
     return snake;
   }
 
