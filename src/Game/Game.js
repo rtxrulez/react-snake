@@ -11,6 +11,46 @@ class Game extends React.Component {
     field: Array(10).fill(Array(10).fill(1))
   };
 
+  appendSnake = (axis = "x") => {
+    let { snake } = this.state;
+    let { x, y } = 0;
+
+    let headX = snake[snake.length - 1][0];
+    let headY = snake[snake.length - 1][1];
+
+    if (axis === "x") {
+      x = headX + 1;
+      y = headY;
+    } else if (axis === "y") {
+      x = headX;
+      y = headY + 1;
+    }
+
+    snake.push([x, y]);
+    snake.shift();
+    return snake;
+  };
+
+  prependSnake = (axis = "x") => {
+    let { snake } = this.state;
+    let { x, y } = 0;
+
+    let headX = snake[0][0];
+    let headY = snake[0][1];
+
+    if (axis === "x") {
+      x = headX - 1;
+      y = headY;
+    } else if (axis === "y") {
+      x = headX;
+      y = headY - 1;
+    }
+
+    snake.unshift([x, y]);
+    snake.pop();
+    return snake;
+  };
+
   walkSnake(to = 3) {
     const { snake } = this.state;
     let len = snake.length - 1;
@@ -18,56 +58,16 @@ class Game extends React.Component {
     let newCord = [];
 
     if (to === 3) {
-      for (let i = 0; i < snake.length; i++) {
-        if (snake[i][1] >= 9) {
-          snake[i][1] = 0;
-        } else {
-          snake[i][1] = snake[i][1] + 1;
-        }
-      }
+      newCord = this.appendSnake("x");
     } else if (to === 9) {
-      for (let i = 0; i < snake.length; i++) {
-        if (snake[i][1] <= 0) {
-          snake[i][1] = 9;
-        } else {
-          snake[i][1] = snake[i][1] - 1;
-        }
-      }
-      
+      newCord = this.prependSnake("x");
     } else if (to === 6) {
-      for (let i = 0; i < snake.length; i++) {
-        if (snake[i][0] >= 9) {
-          snake[i][0] = 0;
-        } else {
-          snake[i][0] = snake[i][0] + 1;
-        }
-      }
+      newCord = this.appendSnake("y");
     } else if (to === 12) {
-      for (let i = 0; i < snake.length; i++) {
-        if (snake[i][0] <= 0) {
-          snake[i][0] = 9;
-        } else {
-          snake[i][0] = snake[i][0] - 1;
-        }
-      }
+      newCord = this.prependSnake("y");
     }
-    console.log("snake", snake);
-    // } else if (to === 9) {
-    //   newCord = [snake[len][0], snake[len][1] - 1];
-
-    //   if (newCord[1] < 0) {
-    //     newCord = [snake[len][0], 10];
-    //   }
-    // } else if (to == 6) {
-    //   newCord = [snake[len][0] + 1, snake[len][1]];
-
-    //   if (newCord[0] >= 10) {
-    //     newCord = [1, snake[len][0]];
-    //   }
-    // }
-    // snake.push(newCord);
     this.setState({
-      snake: snake
+      snake: newCord
     });
   }
 
@@ -96,7 +96,7 @@ class Game extends React.Component {
     // this.walkSnake(this.state.headAngle);
   };
   componentDidMount() {
-    // this.walkSnake(this.state.headAngle);
+    this.walkSnake(this.state.headAngle);
     setInterval(() => {
       this.walkSnake(this.state.headAngle);
     }, 1000);
@@ -110,7 +110,7 @@ class Game extends React.Component {
             <div className="row" key={x}>
               {column.map((el, y) => {
                 for (let i = 0; i < snake.length; i++) {
-                  if (x === snake[i][0] && y === snake[i][1]) {
+                  if (x === snake[i][1] && y === snake[i][0]) {
                     return <span key={y} className="box active" />;
                   }
                 }
