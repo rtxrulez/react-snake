@@ -1,14 +1,21 @@
 import React from "react";
 import "./Game.css";
 
+const defaultData = {
+  width: 10,
+  height: 10,
+  snake: [[1, 1], [1, 2], [1, 3]],
+  headAngle: 3,
+  apples: [[2, 3], [8, 1], [7, 5], [4, 9]],
+  field: Array(10).fill(Array(10).fill(1))
+};
+
 class Game extends React.Component {
-  state = {
-    width: 10,
-    height: 10,
-    snake: [[1, 1], [1, 2], [1, 3]],
-    headAngle: 3,
-    apples: [[2, 3], [8, 1]],
-    field: Array(10).fill(Array(10).fill(1))
+  state = defaultData;
+
+  stopGame = () => {
+    alert("Игра приостановлена!");
+    this.setState(defaultData);
   };
 
   maxMap = cord => {
@@ -22,19 +29,17 @@ class Game extends React.Component {
   };
 
   ifApple = (x, y) => {
-    const { apples } = this.state;
-
+    let apples = [...this.state.apples];
     for (let a = 0; a < apples.length; a++) {
       if (x == apples[a][0] && y == apples[a][1]) {
-        let arr = apples.slice(0,0);
-        console.log('ar', arr)
+        apples.splice(a, 1);
         this.setState({
-          apples: arr
-        })
-        return true
+          apples: apples
+        });
+        return true;
       }
     }
-    return false
+    return false;
   };
 
   goSnake(x, y) {
@@ -132,6 +137,10 @@ class Game extends React.Component {
     this.walkSnake(this.state.headAngle);
     setInterval(() => {
       this.walkSnake(this.state.headAngle);
+
+      if (this.state.apples.length === 0 && this.state.snake.length >= 9) {
+        this.stopGame();
+      }
     }, 500);
   }
 
@@ -168,7 +177,7 @@ class Game extends React.Component {
                   }
                 }
                 for (let a = 0; a < apples.length; a++) {
-                  if (x == apples[a][0] && y == apples[a][1]) {
+                  if (x === apples[a][0] && y === apples[a][1]) {
                     return <span key={x} className="box apple" />;
                   }
                 }
